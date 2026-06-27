@@ -1,0 +1,22 @@
+# Backend
+CareerPilot AI Backend/node_modules/
+CareerPilot AI Backend/.env
+
+# Frontend
+CareerPilot AI Frontend/node_modules/
+CareerPilot AI Frontend/.env
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
