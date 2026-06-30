@@ -233,18 +233,22 @@ Interview Strategy Generation
 
 # 👨‍💻 Author
 
-**Kartik Namdev**
+## Kartik Namdev
 
-Computer Science Engineering Student
+Final Year B.Tech Computer Science Engineering (IoT) Student at VIT Vellore
 
-VIT Vellore
+Passionate about **Full-Stack Development • Generative AI • Backend Development • Cloud Computing**
 
-GitHub: https://github.com/<your-github-username>
-
-LinkedIn: https://linkedin.com/in/<your-linkedin>
+<p align="left">
+  <a href="https://github.com/namdev72">
+    <img src="https://img.shields.io/badge/GitHub-namdev72-181717?style=for-the-badge&logo=github">
+  </a>
+  <a href="https://www.linkedin.com/in/kartik-namdev/">
+    <img src="https://img.shields.io/badge/LinkedIn-Kartik%20Namdev-0A66C2?style=for-the-badge&logo=linkedin">
+  </a>
+</p>
 
 ---
 
-# ⭐ If you like this project
+⭐ **If you like this project, don't forget to star the repository!**
 
-Give this repository a ⭐ on GitHub.
