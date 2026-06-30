@@ -5,17 +5,46 @@ import { useNavigate } from 'react-router'
 
 const Home = () => {
 
-    const { loading, generateReport,reports } = useInterview()
+    const { loading, generateReport, reports } = useInterview()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
+    const [ selectedFile, setSelectedFile ] = useState(null)
     const resumeInputRef = useRef()
 
     const navigate = useNavigate()
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            console.log("[Home] File selected:", file.name, file.size, "bytes", file.type)
+            setSelectedFile(file)
+        } else {
+            console.warn("[Home] No file selected")
+            setSelectedFile(null)
+        }
+    }
+
     const handleGenerateReport = async () => {
-        const resumeFile = resumeInputRef.current.files[ 0 ]
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-        navigate(`/interview/${data._id}`)
+        console.log("[Home] handleGenerateReport called")
+        console.log("[Home] selectedFile:", selectedFile)
+        console.log("[Home] selfDescription length:", selfDescription.length)
+        console.log("[Home] jobDescription length:", jobDescription.length)
+
+        if (!selectedFile && !selfDescription.trim()) {
+            alert("Please upload a resume or provide a self-description.")
+            return
+        }
+
+        try {
+            const data = await generateReport({ jobDescription, selfDescription, resumeFile: selectedFile })
+            if (data && data._id) {
+                navigate(`/interview/${data._id}`)
+            } else {
+                console.error("[Home] generateReport returned invalid data:", data)
+            }
+        } catch (error) {
+            console.error("[Home] Error generating report:", error)
+        }
     }
 
     if (loading) {
@@ -79,9 +108,23 @@ const Home = () => {
                                 <span className='dropzone__icon'>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
                                 </span>
-                                <p className='dropzone__title'>Click to upload or drag &amp; drop</p>
+                                {selectedFile ? (
+                                    <p className='dropzone__title' style={{ color: 'var(--accent, #a78bfa)', fontWeight: 600 }}>
+                                        ✅ {selectedFile.name}
+                                    </p>
+                                ) : (
+                                    <p className='dropzone__title'>Click to upload or drag &amp; drop</p>
+                                )}
                                 <p className='dropzone__subtitle'>PDF or DOCX (Max 5MB)</p>
-                                <input ref={resumeInputRef} hidden type='file' id='resume' name='resume' accept='.pdf,.docx' />
+                                <input
+                                    ref={resumeInputRef}
+                                    hidden
+                                    type='file'
+                                    id='resume'
+                                    name='resume'
+                                    accept='.pdf,.docx'
+                                    onChange={handleFileChange}
+                                />
                             </label>
                         </div>
 

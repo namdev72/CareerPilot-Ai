@@ -19,15 +19,18 @@ export const useInterview = () => {
         setLoading(true)
         let response = null
         try {
+            console.log("[useInterview] Calling generateInterviewReport API...")
             response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
+            console.log("[useInterview] API response:", response)
             setReport(response.interviewReport)
         } catch (error) {
-            console.log(error)
+            console.error("[useInterview] generateReport error:", error?.response?.data || error.message || error)
         } finally {
             setLoading(false)
         }
 
-        return response.interviewReport
+        // Guard: return null if the API call failed (response is null)
+        return response ? response.interviewReport : null
     }
 
     const getReportById = async (interviewId) => {
@@ -60,21 +63,26 @@ export const useInterview = () => {
     }
 
     const getResumePdf = async (interviewReportId) => {
-        setLoading(true)
-        let response = null
+        // NOTE: deliberately NOT calling setLoading(true) here — PDF download
+        // is a background action and should not blank the interview page.
+        console.log("[useInterview] getResumePdf called for:", interviewReportId)
         try {
-            response = await generateResumePdf({ interviewReportId })
+            const response = await generateResumePdf({ interviewReportId })
+            console.log("[useInterview] PDF blob received, size:", response?.size)
             const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
             const link = document.createElement("a")
             link.href = url
             link.setAttribute("download", `resume_${interviewReportId}.pdf`)
             document.body.appendChild(link)
             link.click()
+            // Clean up DOM and revoke object URL
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+            console.log("[useInterview] PDF download triggered successfully")
         }
         catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
+            console.error("[useInterview] getResumePdf error:", error?.response?.data || error.message || error)
+            alert("Failed to generate resume PDF. Please try again.")
         }
     }
 

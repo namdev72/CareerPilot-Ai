@@ -1,4 +1,6 @@
-import { PDFParse } from "pdf-parse";
+import { createRequire } from "module";
+const { PDFParse } = createRequire(import.meta.url)("pdf-parse");
+
 import {generateInterviewReport,generateResumePdf} from "../services/ai.service.js";
 import interviewReportModel from "../models/interviewReport.model.js";
 
@@ -8,17 +10,24 @@ import interviewReportModel from "../models/interviewReport.model.js";
 async function generateInterViewReportController(req, res) {
     try {
         // Check if a file was uploaded
+        console.log("[generateInterViewReportController] req.file:", req.file ? `${req.file.originalname} (${req.file.size} bytes)` : "MISSING");
         if (!req.file) {
             return res.status(400).json({
                 message: "Please upload a resume PDF."
             });
         }
 
-        // Parse the PDF
+        // Parse the PDF using pdf-parse (PDFParse class requires Uint8Array, not Buffer)
+        console.log("[generateInterViewReportController] Parsing PDF buffer...");
         const parser = new PDFParse(Uint8Array.from(req.file.buffer));
         const resumeContent = await parser.getText();
 
+
         const { selfDescription, jobDescription } = req.body;
+
+        console.log("[generateInterViewReportController] PDF parsed, text length:", resumeContent.text?.length);
+        console.log("[generateInterViewReportController] selfDescription:", selfDescription?.substring(0, 100));
+        console.log("[generateInterViewReportController] jobDescription:", jobDescription?.substring(0, 100));
 
         // Generate AI report
         const interViewReportByAi = await generateInterviewReport({
@@ -88,25 +97,42 @@ async function getAllInterviewReportsController(req, res) {
  */
 async function generateResumePdfController(req, res) {
     const { interviewReportId } = req.params
+    console.log("[generateResumePdfController] Generating PDF for report:", interviewReportId)
 
-    const interviewReport = await interviewReportModel.findById(interviewReportId)
+    try {
+        const interviewReport = await interviewReportModel.findById(interviewReportId)
 
-    if (!interviewReport) {
-        return res.status(404).json({
-            message: "Interview report not found."
+        if (!interviewReport) {
+            return res.status(404).json({
+                message: "Interview report not found."
+            })
+        }
+
+        const { resume, jobDescription, selfDescription } = interviewReport
+        console.log("[generateResumePdfController] resume length:", resume?.length, "| selfDescription length:", selfDescription?.length)
+
+        const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription })
+
+        if (!pdfBuffer) {
+            return res.status(500).json({ message: "AI failed to generate resume HTML. Please try again." })
+        }
+
+        console.log("[generateResumePdfController] PDF generated, size:", pdfBuffer.length, "bytes")
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
+        })
+
+        res.send(pdfBuffer)
+
+    } catch (error) {
+        console.error("[generateResumePdfController] Error:", error.message)
+        res.status(500).json({
+            message: "Failed to generate resume PDF.",
+            error: error.message
         })
     }
-
-    const { resume, jobDescription, selfDescription } = interviewReport
-
-    const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription })
-
-    res.set({
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
-    })
-
-    res.send(pdfBuffer)
 }
 
 export {generateInterViewReportController,

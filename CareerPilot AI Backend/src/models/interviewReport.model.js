@@ -11,7 +11,7 @@ const technicalQuestionSchema = new mongoose.Schema({
     },
     answer: {
         type: String,
-        required: [ true, "Answer is required" ]
+        default: ""  // filled in by the user during interview practice
     }
 }, {
     _id: false
@@ -28,7 +28,7 @@ const behavioralQuestionSchema = new mongoose.Schema({
     },
     answer: {
         type: String,
-        required: [ true, "Answer is required" ]
+        default: ""  // filled in by the user during interview practice
     }
 }, {
     _id: false
