@@ -146,7 +146,7 @@ GOOGLE_GENAI_API_KEY=Your_Gemini_API_Key
 ## 📄 Recent Interview Plan
 
 <p align="center">
-<img src="CareerPilot_Photo/Recent Interview plan.png" width="900">
+<img src="CareerPilot_Photo/recent-interview-plan.png" width="900">
 </p>
 
 <br><br>
@@ -156,7 +156,7 @@ GOOGLE_GENAI_API_KEY=Your_Gemini_API_Key
 ## ❓ Technical Questions
 
 <p align="center">
-<img src="CareerPilot_Photo/Technical Question.png" width="900">
+<img src="CareerPilot_Photo/technical-questions.png" width="900">
 </p>
 
 <br><br>
@@ -166,7 +166,7 @@ GOOGLE_GENAI_API_KEY=Your_Gemini_API_Key
 ## 🗣️ Behavioral Questions
 
 <p align="center">
-<img src="CareerPilot_Photo/Behaviour Question.png" width="900">
+<img src="CareerPilot_Photo/behavioural-questions.png" width="900">
 </p>
 
 <br><br>
